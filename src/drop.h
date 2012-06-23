@@ -9,12 +9,12 @@
 
 class Drop{
     public:
-        Drop(size_t grid_lenght, size_t grid_hight);
-        
+        Drop(size_t grid_lenght, size_t grid_hight, unsigned radius, double g = 9.8, double noise = 0.0);
         size_t size() const;
         std::vector<int> &  operator[](size_t index) ;
         double Energy() const;
-        std::vector<std::vector<int>::iterator> RandomChange();
+        //iterate the simulation
+        void operator()();
 
     private:
         std::vector<std::vector<int>> grid;
@@ -23,6 +23,9 @@ class Drop{
 
         std::vector<int>::iterator  get_wet();
         std::vector<int>::iterator get_dry();
+        unsigned radius;
+        double  g, noise;
+
 };
 
 class Gnuplot{
