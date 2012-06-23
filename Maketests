@@ -3,7 +3,7 @@
 
 CC=g++
 CFLAGS=-c -Wall -std=c++0x  
-LDFLAGS=-lgtest -lgsl -lgslcblas -lm -lpthread
+LDFLAGS=-lgtest -lm 
 SOURCES= test_unit/tests.cpp src/drop.cpp src/gnuplot_i/gnuplot_i.c
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests
