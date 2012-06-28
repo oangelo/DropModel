@@ -10,15 +10,15 @@
 
 class Drop{
     public:
-        Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two, 
-             double g = 9.8, double k = 1, double J1 = 1, double J2 = 1, double noise = 0.0, bool ignore_fist_row = false);
+        Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two);
         size_t size() const;
         std::vector<int> &  operator[](size_t index) ;
-        double Energy() const;
-        double BulkEnergy() const;
         std::pair<double, double> CenterOfMass() const;
+        double GravitationalEnergy(double g) const;
+        double BulkEnergy(double k) const;
+        double InteractionEnergy(double J1, double J2) const;
         //iterate the simulation
-        void operator()();
+        void operator()(double g = 9.8, double k = 1, double J1 = 1, double J2 = 1, double noise = 0.0);
 
     private:
         std::vector<std::vector<int>> grid;

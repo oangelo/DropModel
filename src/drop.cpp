@@ -1,9 +1,8 @@
 #include "drop.h"
 
-Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two, 
-           double g , double k, double J1 , double J2 , double noise , bool ignore_fist_row)
+Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two)
 : grid(), geometrical_parameter_one(geometrical_parameter_one), geometrical_parameter_two(geometrical_parameter_two), 
-  J1(J1), J2(J2), g(g), k(k), noise(noise),ignore_fist_row(ignore_fist_row)
+  J1(1), J2(2), g(9.8), k(1), noise(0),ignore_fist_row(false)
 {
     std::vector<int> row(grid_height, -1); 
     for (size_t i = 0; i < grid_length; ++i)
@@ -103,17 +102,17 @@ std::vector<int>::iterator Drop::get_dry() {
     }
 }
 
-void Drop::operator()(){
+void Drop::operator()(double g, double k, double J1, double J2, double noise){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0,1);
 
-    double e_init = Energy() + BulkEnergy();
+    double e_init = GravitationalEnergy(g) + BulkEnergy(k) + InteractionEnergy(J1, J2);
     auto wet = this->get_wet();
     *wet = -*wet;
     auto dry = this->get_dry();
     *dry = -*dry;
-    double e_end = Energy() + BulkEnergy();
+    double e_end = GravitationalEnergy(g) + BulkEnergy(k) + InteractionEnergy(J1, J2);
     if(dist(gen) > noise)
         if(e_end > e_init){
             *wet = -*wet;
@@ -121,9 +120,8 @@ void Drop::operator()(){
         }
 }
 
-double Drop::Energy() const{
+double Drop::InteractionEnergy(double J1, double J2) const{
     double energy = 0;
-    int n = 1;
     //spin interaction term
     for (size_t i = 2; i < grid.size()-2; ++i){
         for (size_t j = 2; j < grid[i].size()-2; ++j){
@@ -142,6 +140,11 @@ double Drop::Energy() const{
             energy += energy_neighbours;
         }
     }
+    return energy;  
+}
+ 
+double Drop::GravitationalEnergy(double g) const {
+    double energy = 0;
     //gravitational field
     double g_energy = 0;
     for (size_t j = 0; j < grid[0].size(); ++j){
@@ -155,7 +158,7 @@ double Drop::Energy() const{
     return energy;  
 }
 
-double Drop::BulkEnergy() const{
+double Drop::BulkEnergy(double k) const{
    double energy = 0; 
    std::pair<double, double> cm_position(CenterOfMass());
    
