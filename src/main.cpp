@@ -34,9 +34,9 @@ int main(int argc, char** argv) {
             Gnuplot plot;
             for (size_t i = 0; i < 10000; ++i)
             {
+                plot(drop, 1);
                 for (size_t i = 0; i < 200; ++i)
                     drop(g, k, J1, J2);
-                plot(drop, 1);
             }
         }
      if(std::string(argv[i]) == "--help" || std::string(argv[i]) == "--help"){
