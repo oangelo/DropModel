@@ -39,9 +39,22 @@ int main(int argc, char** argv) {
                     drop(g, k, J1, J2);
             }
         }
+        
+        if(std::string(argv[i]) == "--print"){
+            Drop drop(grid_length, grid_height, geo_parameter1, geo_parameter2);
+            Print print_data;
+            std::string file_name(argv[i+1]);
+            for (size_t i = 0; i < 10000; ++i)
+            {
+                print_data(drop, file_name);
+                for (size_t i = 0; i < 200; ++i)
+                    drop(g, k, J1, J2);
+            }
+        }
+
      if(std::string(argv[i]) == "--help" || std::string(argv[i]) == "--help"){
         std::cout << "Usage:" << std::endl;
-        std::cout << "./drop --plot" << std::endl;
+        std::cout << "./drop --plot or --print [file name]" << std::endl;
         std::cout << "--grid   \t receives two args [height] and [length]" << std::endl;
         std::cout << "--circle \t receives two args [radius] and [height of the center]" << std::endl;
         std::cout << "--model  \t receives four args [J1] ,[J2], [g], [k]. Where the J1, J2 are the spin interaction, g is the gravitational constant, and k is the intensity of the central force." << std::endl;
@@ -49,7 +62,7 @@ int main(int argc, char** argv) {
     }
     if(argc == 1){
         std::cout << "Usage:" << std::endl;
-        std::cout << "./drop  --plot" << std::endl;
+        std::cout << "./drop --plot or --print [file name]" << std::endl;
         std::cout << "--grid   \t receives two args [height] and [length]" << std::endl;
         std::cout << "--circle \t receives two args [radius] and [height of the center]" << std::endl;
         std::cout << "--model  \t receives four args [J1] ,[J2], [g], [k]. Where the J1, J2 are the spin interaction, g is the gravitational constant, and k is the intensity of the central force." << std::endl;

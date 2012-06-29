@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <string>
 
 #include "gnuplot_i/gnuplot_i.h"
 
@@ -32,7 +33,10 @@ class Drop{
         bool ignore_fist_row;
         const unsigned wet = 1, dry = -1;
 };
-
+class Print{
+    public:
+        void operator()(Drop & drop, std::string file_name) const;
+};
 class Gnuplot{
     public:
         Gnuplot();

@@ -213,3 +213,12 @@ void Gnuplot::operator()(Drop &drop, unsigned time) const{
     gnuplot_cmd(h, "plot  \"%s\" pt 7 ps 0.5 notitle", myfile);
     sleep(time);
 }
+void Print::operator()(Drop &drop, std::string file_name) const{
+    std::ofstream plot;  
+    plot.open(file_name);
+    for (size_t i = 0; i < drop.size(); ++i)
+        for (size_t j = 0; j < drop[i].size(); ++j)
+            if(drop[i][j] == -1)
+                plot << i << " \t " << j << std::endl; 
+    plot.close();
+}
