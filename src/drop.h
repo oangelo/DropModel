@@ -19,7 +19,7 @@ class Drop{
         double BulkEnergy(double k) const;
         double InteractionEnergy(double J1, double J2) const;
         //iterate the simulation
-        void operator()(double g = 9.8, double k = 1, double J1 = 1, double J2 = 1, double noise = 0.0);
+        void operator()(double g = 9.8, double k = 1, double J1 = 1, double J2 = 1, double temperature = 0.0);
 
     private:
         std::vector<std::vector<int>> grid;
@@ -29,18 +29,22 @@ class Drop{
         std::vector<int>::iterator  get_wet();
         std::vector<int>::iterator get_dry();
         unsigned geometrical_parameter_one, geometrical_parameter_two;
-        double  J1, J2, g, k, noise;
         bool ignore_fist_row;
         const unsigned wet = 1, dry = -1;
 };
+
 class Print{
     public:
         void operator()(Drop & drop, std::string file_name) const;
+        void operator()(std::vector<Drop> &drops, std::string file_name) const;
 };
+
 class Gnuplot{
     public:
         Gnuplot();
         ~Gnuplot();
+        void operator()(std::vector<Drop> &drops, unsigned time) const;
+        void mean(std::vector<Drop> &drops, unsigned time) const;
         void operator()(Drop & drop, unsigned time) const;
     private:
         gnuplot_ctrl * h;

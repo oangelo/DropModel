@@ -18,7 +18,25 @@ TEST(Drop, energy){
     Drop drop(100,30,20,15);
     //std::cout << drop.Energy() << std::endl;
 }
-
+//*
+TEST(Drop, plot_mean){
+    Gnuplot plot;
+    std::vector<Drop> drops(50,Drop(40, 40 ,8 ,8));
+              
+    for (size_t i = 0; i < 1000; ++i)
+    {
+        plot.mean(drops,1);
+        
+        for (size_t i = 0; i < 200; ++i)
+            for (size_t j = 0; j < drops.size(); ++j)
+                drops[j](0.1, 0.0,
+                     1.0, 1.0, 
+                     0.1);
+              
+    }
+    
+}
+//*/
 TEST(Drop, plot){
     Gnuplot plot;
     Drop drop(40, 40 ,10 ,0);
@@ -27,10 +45,9 @@ TEST(Drop, plot){
     {
         plot(drop,1);
         for (size_t i = 0; i < 200; ++i)
-            drop(1.0, 4.0,
-              0.0, 0.0, 
-              0.00);
-    //std::cout << drop.Energy() << " " << drop.BulkEnergy() << " " << drop.CenterOfMass().second << std::endl;
+            drop(0.0, 0.0,
+              1.0, 1.0, 
+              0.50);
     }
     
 } 
