@@ -1,8 +1,7 @@
 #include "drop.h"
 
 Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two)
-: grid(), geometrical_parameter_one(geometrical_parameter_one), geometrical_parameter_two(geometrical_parameter_two), 
-  J1(1), J2(2), g(9.8), k(1), noise(0),ignore_fist_row(false)
+: grid(), geometrical_parameter_one(geometrical_parameter_one), geometrical_parameter_two(geometrical_parameter_two), ignore_fist_row(true)
 {
     std::vector<int> row(grid_height, -1); 
     for (size_t i = 0; i < grid_length; ++i)
@@ -102,7 +101,8 @@ std::vector<int>::iterator Drop::get_dry() {
     }
 }
 
-void Drop::operator()(double g, double k, double J1, double J2, double noise){
+void Drop::operator()(double g, double k, double J1, double J2, double temperature){
+    double beta = 1 / temperature;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0,1);
@@ -113,11 +113,12 @@ void Drop::operator()(double g, double k, double J1, double J2, double noise){
     auto dry = this->get_dry();
     *dry = -*dry;
     double e_end = GravitationalEnergy(g) + BulkEnergy(k) + InteractionEnergy(J1, J2);
-    if(dist(gen) > noise)
-        if(e_end > e_init){
+    //if(e_end > e_init){
+        if(dist(gen) > exp(-beta*(e_end-e_init))){
             *wet = -*wet;
             *dry = -*dry;
         }
+    //}
 }
 
 double Drop::InteractionEnergy(double J1, double J2) const{
@@ -129,8 +130,9 @@ double Drop::InteractionEnergy(double J1, double J2) const{
             int sij = grid[i][j];
             for (int x = -1; x < 2; ++x)
                 for (int y = -1; y < 2; ++y)
-                    if((x != 0) && (y != 0))
-                            energy_neighbours -= J1 *sij * grid[i + x ][j + y ];
+                    if((x != 0) && (y != 0)){
+                        energy_neighbours -= J1 *sij * grid[i + x ][j + y ];
+                    }
             
             for (int x = -2; x < 3; x += 2)
                 for (int y = -2; y < 3; y += 2)
@@ -213,12 +215,71 @@ void Gnuplot::operator()(Drop &drop, unsigned time) const{
     gnuplot_cmd(h, "plot  \"%s\" pt 7 ps 0.5 notitle", myfile);
     sleep(time);
 }
+
+void Gnuplot::operator()(std::vector<Drop> &drops, unsigned time) const{
+    std::vector<std::vector<double>> mean_grid;
+    for(size_t i = 0; i < drops[0].size(); ++i)
+         mean_grid.push_back(std::vector<double>(drops[0][0].size(),0.0));
+    for(auto droplet : drops)
+        for(size_t i = 0;i < droplet.size(); ++i)
+            for(size_t j = 0;j < droplet[i].size(); ++j)
+                mean_grid[i][j] += static_cast<double>(droplet[i][j]) / drops.size();
+    std::ofstream plot;  
+    plot.open("buffer");
+    for (size_t i = 0; i < mean_grid.size(); ++i)
+        for (size_t j = 0; j < mean_grid[i].size(); ++j)
+                plot << i << " \t " << j << " \t " << mean_grid[i][j] << std::endl; 
+    plot.close();
+
+    char myfile[] = "buffer";   
+
+    gnuplot_cmd(h, "plot  \"%s\" u 1:2:3 with points pt 7 linetype palette", myfile);
+    sleep(time);
+}
+void Gnuplot::mean(std::vector<Drop> &drops, unsigned time) const{
+    std::vector<std::vector<double>> mean_grid;
+    for(size_t i = 0; i < drops[0].size(); ++i)
+         mean_grid.push_back(std::vector<double>(drops[0][0].size(),0.0));
+    for(auto droplet : drops)
+        for(size_t i = 0;i < droplet.size(); ++i)
+            for(size_t j = 0;j < droplet[i].size(); ++j)
+                mean_grid[i][j] += static_cast<double>(droplet[i][j]) / drops.size();
+    std::ofstream plot;  
+    plot.open("buffer");
+    for (size_t i = 0; i < mean_grid.size(); ++i)
+        for (size_t j = 0; j < mean_grid[i].size(); ++j)
+            if(mean_grid[i][j] < 0)
+                plot << i << " \t " << j << std::endl; 
+    plot.close();
+
+    char myfile[] = "buffer";   
+    gnuplot_cmd(h, "plot  \"%s\" pt 7 ps 0.5 notitle", myfile);
+    sleep(time);
+}
+
 void Print::operator()(Drop &drop, std::string file_name) const{
     std::ofstream plot;  
     plot.open(file_name);
     for (size_t i = 0; i < drop.size(); ++i)
         for (size_t j = 0; j < drop[i].size(); ++j)
             if(drop[i][j] == -1)
+                plot << i << " \t " << j << std::endl; 
+    plot.close();
+}
+
+void Print::operator()(std::vector<Drop> &drops, std::string file_name) const{
+    std::vector<std::vector<double>> mean_grid;
+    for(size_t i = 0; i < drops[0].size(); ++i)
+         mean_grid.push_back(std::vector<double>(drops[0][0].size(),0.0));
+    for(auto droplet : drops)
+        for(size_t i = 0;i < droplet.size(); ++i)
+            for(size_t j = 0;j < droplet[i].size(); ++j)
+                mean_grid[i][j] += static_cast<double>(droplet[i][j]) / drops.size();
+    std::ofstream plot;  
+    plot.open(file_name);
+    for (size_t i = 0; i < mean_grid.size(); ++i)
+        for (size_t j = 0; j < mean_grid[i].size(); ++j)
+            if( mean_grid[i][j] < 0 )
                 plot << i << " \t " << j << std::endl; 
     plot.close();
 }
