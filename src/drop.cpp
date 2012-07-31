@@ -101,18 +101,18 @@ std::vector<int>::iterator Drop::get_dry() {
     }
 }
 
-void Drop::operator()(double g, double k, double J1, double J2, double temperature){
+void Drop::operator()(double g, double J1, double J2, double temperature){
     double beta = 1 / temperature;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0,1);
 
-    double e_init = GravitationalEnergy(g) + BulkEnergy(k) + InteractionEnergy(J1, J2);
+    double e_init = GravitationalEnergy(g) + InteractionEnergy(J1, J2);
     auto wet = this->get_wet();
     *wet = -*wet;
     auto dry = this->get_dry();
     *dry = -*dry;
-    double e_end = GravitationalEnergy(g) + BulkEnergy(k) + InteractionEnergy(J1, J2);
+    double e_end = GravitationalEnergy(g) +  InteractionEnergy(J1, J2);
     //if(e_end > e_init){
         if(dist(gen) > exp(-beta*(e_end-e_init))){
             *wet = -*wet;
@@ -159,7 +159,7 @@ double Drop::GravitationalEnergy(double g) const {
     energy += g_energy;
     return energy;  
 }
-
+/*
 double Drop::BulkEnergy(double k) const{
    double energy = 0; 
    std::pair<double, double> cm_position(CenterOfMass());
@@ -173,6 +173,7 @@ double Drop::BulkEnergy(double k) const{
            }
    return energy;
 }
+*/
 
 std::pair<double, double> Drop::CenterOfMass() const{
     std::pair<double, double> cm;

@@ -5,7 +5,7 @@ int main(int argc, char** argv) {
     int grid_height = 40, grid_length = 40;
     int geo_parameter1 = 10, geo_parameter2 = 0;
     double J1 = 1, J2 = 1, g = 9.8, k = 1, temp = 1;
-    size_t samples = 20;
+   size_t samples = 20;
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "--grid"){
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     std::cout << "J1 = " << J1 << std::endl;
     std::cout << "J2 = " << J2 << std::endl;
     std::cout << "g = " << g << std::endl;
-    std::cout << "k = " << k << std::endl;
+    //std::cout << "k = " << k << std::endl;
     std::cout << "temp = " << temp << std::endl;
     for (size_t i = 1; i < argc; ++i)
     {
@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
             {
                 plot(drop, 1);
                 for (size_t i = 0; i < 200; ++i)
-                    drop(g, k, J1, J2, temp);
+                    drop(g, J1, J2, temp);
             }
         }
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
             {
                 print_data(drop, file_name);
                 for (size_t i = 0; i < 200; ++i)
-                    drop(g, k, J1, J2, temp);
+                    drop(g, J1, J2, temp);
             }
         }
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
                 print_data(drops, file_name);
                 for (size_t i = 0; i < 200; ++i)
                     for (size_t j = 0; j < drops.size(); ++j)
-                        drops[j](g, k, J1, J2, temp);
+                        drops[j](g, J1, J2, temp);
             }
         }
 

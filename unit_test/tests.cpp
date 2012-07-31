@@ -29,7 +29,7 @@ TEST(Drop, plot_mean){
         
         for (size_t i = 0; i < 200; ++i)
             for (size_t j = 0; j < drops.size(); ++j)
-                drops[j](0.1, 0.0,
+                drops[j](0.1, 
                      1.0, 1.0, 
                      0.1);
               
@@ -45,7 +45,7 @@ TEST(Drop, plot){
     {
         plot(drop,1);
         for (size_t i = 0; i < 200; ++i)
-            drop(0.0, 0.0,
+            drop(0.0, 
               1.0, 1.0, 
               0.50);
     }

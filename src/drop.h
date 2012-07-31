@@ -16,10 +16,10 @@ class Drop{
         std::vector<int> &  operator[](size_t index) ;
         std::pair<double, double> CenterOfMass() const;
         double GravitationalEnergy(double g) const;
-        double BulkEnergy(double k) const;
+        //double BulkEnergy(double k) const;
         double InteractionEnergy(double J1, double J2) const;
         //iterate the simulation
-        void operator()(double g = 9.8, double k = 1, double J1 = 1, double J2 = 1, double temperature = 0.0);
+        void operator()(double g = 9.8, double J1 = 1, double J2 = 1, double temperature = 0.0);
 
     private:
         std::vector<std::vector<int>> grid;

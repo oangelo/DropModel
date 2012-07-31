@@ -4,7 +4,7 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++0x  
 LDFLAGS=-lgtest -lm 
-SOURCES= test_unit/tests.cpp src/drop.cpp src/gnuplot_i/gnuplot_i.c
+SOURCES= unit_test/tests.cpp src/drop.cpp src/gnuplot_i/gnuplot_i.c
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests
 
