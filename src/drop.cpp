@@ -1,13 +1,8 @@
 #include "drop.h"
 
 Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two)
-: grid(), geometrical_parameter_one(geometrical_parameter_one), geometrical_parameter_two(geometrical_parameter_two), ignore_fist_row(true)
+: grid(grid_height, std::vector<int>(grid_length, -1)), geometrical_parameter_one(geometrical_parameter_one), geometrical_parameter_two(geometrical_parameter_two), ignore_fist_row(true)
 {
-    std::vector<int> row(grid_height, -1); 
-    for (size_t i = 0; i < grid_length; ++i)
-    {
-        grid.push_back(row);
-    }
     //creating the drop
     for (size_t i = 0; i < grid.size(); ++i)
         for (size_t j = 0; j < grid[i].size(); ++j)
@@ -38,7 +33,7 @@ std::vector<int>::iterator  Drop::get_wet() {
         std::vector<int> value{-1};
         std::uniform_int_distribution<> dist_height(0,grid[0].size()-1);
         unsigned rd_height  = dist_height(gen);
-        if(grid[rand][rd_height] == 1)
+        if(grid[rand][rd_height] == 1){
             if(rd_height > 0){
                 bool valid = false; 
                 for (int x = -1; x < 2; ++x)
@@ -61,6 +56,7 @@ std::vector<int>::iterator  Drop::get_wet() {
 
                 }
             }
+        }
     }
 }
 
@@ -75,7 +71,7 @@ std::vector<int>::iterator Drop::get_dry() {
         std::vector<int> value{-1};
         std::uniform_int_distribution<> dist_height(0,grid[0].size()-1);
         unsigned rd_height  = dist_height(gen);
-        if(grid[rand][rd_height] == -1)
+        if(grid[rand][rd_height] == -1){
             if(rd_height > 0){
                 bool valid = false; 
                 for (int x = -1; x < 2; ++x)
@@ -98,6 +94,7 @@ std::vector<int>::iterator Drop::get_dry() {
 
                 }
             }
+        }
     }
 }
 
@@ -159,21 +156,6 @@ double Drop::GravitationalEnergy(double g) const {
     energy += g_energy;
     return energy;  
 }
-/*
-double Drop::BulkEnergy(double k) const{
-   double energy = 0; 
-   std::pair<double, double> cm_position(CenterOfMass());
-   
-   for (size_t i = 0; i < grid.size(); ++i)
-       for (size_t j = 0; j < grid[i].size(); ++j)   
-           if(grid[i][j] == wet){
-               //energy += -k / sqrt(pow(i - cm_position.first, 2) +  pow(j + cm_position.second, 2));
-               energy +=  k * sqrt(pow(float(i) - cm_position.first, 2) +  pow(float(j) - cm_position.second, 2));
-                //std::cout << sqrt(pow(float(i) - cm_position.first, 2) +  pow(float(j) - cm_position.second, 2)) << " " << energy << " " << k << std::endl;
-           }
-   return energy;
-}
-*/
 
 std::pair<double, double> Drop::CenterOfMass() const{
     std::pair<double, double> cm;
@@ -194,6 +176,57 @@ std::pair<double, double> Drop::CenterOfMass() const{
 size_t Drop::size() const { return grid.size(); }
 std::vector<int> &  Drop::operator[](size_t index) { return grid[index]; }
 
+bool IsOnEdge(size_t i, size_t j, const matrix & grid){
+    if(i <  grid.size() - 1) {
+        if(j < grid[i].size() - 1)
+            if(grid[i][j] != grid[i + 1][j + 1])
+                return true;
+        if(j > 0)
+            if(grid[i][j] != grid[i + 1][j - 1])
+                return true;
+        if(grid[i][j] != grid[i + 1][j])
+            return true;
+    }
+    if(i > 0) {
+        if(j > 0)
+            if(grid[i][j] != grid[i - 1][j - 1])
+                 return true;
+        if(grid[i][j] != grid[i - 1][j])
+            return true;
+        if(j < grid[i].size() - 1)
+            if(grid[i][j] != grid[i - 1][j + 1])
+                return true;
+    }
+  
+    if(j < grid[i].size() - 1)
+        if(grid[i][j] != grid[i][j + 1])
+            return true;
+    if(j > 0)
+        if(grid[i][j] != grid[i][j - 1])
+            return true;
+
+}
+
+//*
+void GetBorders(matrix & grid, int color_one, int color_two,  
+                std::vector<column::iterator> & one, 
+                std::vector<column::iterator> & two) {
+    for(size_t i = 0; i < grid.size(); ++i) { 
+        for(size_t j = 0; j < grid[i].size(); ++j) {
+            if(IsOnEdge(i, j, grid)) {
+                column &vec = grid[i];
+                if(grid[i][j] == color_one) {
+                    one.push_back(vec.begin() + j);
+                }else{
+                    if(grid[i][j] == color_two)
+                        two.push_back(vec.begin() + j);
+                }
+    
+            }
+        }
+    }
+}
+//*/
 Gnuplot::Gnuplot():h(){
     h = gnuplot_init() ; 
 }

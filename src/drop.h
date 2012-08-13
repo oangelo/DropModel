@@ -9,6 +9,12 @@
 
 #include "gnuplot_i/gnuplot_i.h"
 
+
+//TODO function get boarders is not working, there is a problem with the vectors interatos.
+
+typedef std::vector<int> column;
+typedef std::vector<column> matrix;
+
 class Drop{
     public:
         Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two);
@@ -22,7 +28,7 @@ class Drop{
         void operator()(double g = 9.8, double J1 = 1, double J2 = 1, double temperature = 0.0);
 
     private:
-        std::vector<std::vector<int>> grid;
+        matrix grid;
         unsigned drop_ray;
         bool inside_drop(size_t i, size_t j);
 
@@ -32,6 +38,11 @@ class Drop{
         bool ignore_fist_row;
         const unsigned wet = 1, dry = -1;
 };
+
+bool IsOnEdge(size_t i, size_t j, const matrix & grid);
+void GetBorders(matrix & grid, int color_one, int color_two, 
+                std::vector<column::iterator> & one, 
+                std::vector<column::iterator> & two);
 
 class Print{
     public:
