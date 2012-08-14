@@ -21,82 +21,6 @@ bool Drop::inside_drop(size_t i, size_t j){
         return false;
 }
 
-std::vector<int>::iterator  Drop::get_wet() {
-    //random number generator
-    std::vector<std::vector<int>::iterator> changes; 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1,grid.size()-2);
-    while(true){
-        size_t rand = dist(gen);
-         std::vector<int>  &random_vec = grid[rand];
-        std::vector<int> value{-1};
-        std::uniform_int_distribution<> dist_height(0,grid[0].size()-1);
-        unsigned rd_height  = dist_height(gen);
-        if(grid[rand][rd_height] == 1){
-            if(rd_height > 0){
-                bool valid = false; 
-                for (int x = -1; x < 2; ++x)
-                    for (int y = -1; y < 2; ++y)
-                        if((x != 0) && (y != 0) &&  grid[rand + x][rd_height + y] == -1 )
-                            valid = true;
-                if(valid){
-                    return(random_vec.begin() + rd_height);
-                }
-            }else{
-                if(!ignore_fist_row){
-                    bool valid = false; 
-                    for (int x = -1; x < 2; ++x)
-                        for (int y = 0; y < 2; ++y)
-                            if((x != 0) && (y != 0) &&  grid[rand + x][rd_height + y] == - 1 )
-                                valid = true;
-                    if(valid){
-                        return(random_vec.begin() + rd_height);
-                    }
-
-                }
-            }
-        }
-    }
-}
-
-std::vector<int>::iterator Drop::get_dry() {
-    //random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1,grid.size()-2);
-    while(true){
-        size_t rand = dist(gen);
-        std::vector<int> &random_vec = grid[rand];
-        std::vector<int> value{-1};
-        std::uniform_int_distribution<> dist_height(0,grid[0].size()-1);
-        unsigned rd_height  = dist_height(gen);
-        if(grid[rand][rd_height] == -1){
-            if(rd_height > 0){
-                bool valid = false; 
-                for (int x = -1; x < 2; ++x)
-                    for (int y = -1; y < 2; ++y)
-                        if((x != 0) && (y != 0) &&  grid[rand + x][rd_height + y] == 1 )
-                            valid = true;
-                if(valid){
-                    return(random_vec.begin() + rd_height);
-                }
-            }else{
-                if(!ignore_fist_row){
-                    bool valid = false; 
-                    for (int x = -1; x < 2; ++x)
-                        for (int y = 0; y < 2; ++y)
-                            if((x != 0) && (y != 0) &&  grid[rand + x][rd_height + y] ==  1 )
-                                valid = true;
-                    if(valid){
-                        return(random_vec.begin() + rd_height);
-                    }
-
-                }
-            }
-        }
-    }
-}
 
 void Drop::operator()(double g, double J1, double J2, double temperature){
     double beta = 1 / temperature;
@@ -104,10 +28,17 @@ void Drop::operator()(double g, double J1, double J2, double temperature){
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0,1);
 
+    std::vector<column::iterator>  dry_element; 
+    std::vector<column::iterator>  wet_element;
+
+    GetBorders(grid, wet, dry, wet_element, dry_element);
+    std::uniform_int_distribution<> dry_dist(0,dry_element.size()-1);
+    std::uniform_int_distribution<> wet_dist(0,wet_element.size()-1);
+
     double e_init = GravitationalEnergy(g) + InteractionEnergy(J1, J2);
-    auto wet = this->get_wet();
+    column::iterator &  wet = wet_element[wet_dist(gen)];
     *wet = -*wet;
-    auto dry = this->get_dry();
+    column::iterator & dry = dry_element[dry_dist(gen)];
     *dry = -*dry;
     double e_end = GravitationalEnergy(g) +  InteractionEnergy(J1, J2);
     //if(e_end > e_init){
@@ -128,13 +59,13 @@ double Drop::InteractionEnergy(double J1, double J2) const{
             for (int x = -1; x < 2; ++x)
                 for (int y = -1; y < 2; ++y)
                     if((x != 0) && (y != 0)){
-                        energy_neighbours -= J1 *sij * grid[i + x ][j + y ];
+                        energy_neighbours -= J1 *sij * grid[i + x][j + y];
                     }
             
             for (int x = -2; x < 3; x += 2)
                 for (int y = -2; y < 3; y += 2)
                     if((x != 0) && (y != 0))
-                        energy_neighbours -= J2 *sij * grid[i + x ][j + y ];
+                        energy_neighbours -= J2 *sij * grid[i + x][j + y];
             
             energy += energy_neighbours;
         }
@@ -143,7 +74,6 @@ double Drop::InteractionEnergy(double J1, double J2) const{
 }
  
 double Drop::GravitationalEnergy(double g) const {
-    double energy = 0;
     //gravitational field
     double g_energy = 0;
     for (size_t j = 0; j < grid[0].size(); ++j){
@@ -153,8 +83,7 @@ double Drop::GravitationalEnergy(double g) const {
         }
         g_energy += g * j * sum;  
     }
-    energy += g_energy;
-    return energy;  
+    return g_energy;  
 }
 
 std::pair<double, double> Drop::CenterOfMass() const{

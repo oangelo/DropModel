@@ -10,7 +10,6 @@
 #include "gnuplot_i/gnuplot_i.h"
 
 
-//TODO function get boarders is not working, there is a problem with the vectors interatos.
 
 typedef std::vector<int> column;
 typedef std::vector<column> matrix;

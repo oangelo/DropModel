@@ -81,17 +81,22 @@ TEST(Drop, energy){
 //*
 TEST(Drop, plot_mean){
     Gnuplot plot;
-    std::vector<Drop> drops(50,Drop(40, 40 ,8 ,8));
+    std::vector<Drop> drops(10,Drop(40, 40 ,8 ,15));
               
     for (size_t i = 0; i < 1000; ++i)
     {
         plot.mean(drops,1);
         
-        for (size_t i = 0; i < 200; ++i)
-            for (size_t j = 0; j < drops.size(); ++j)
-                drops[j](0.1, 
-                     1.0, 1.0, 
-                     0.1);
+        for (size_t i = 0; i < 400; ++i)
+            for (size_t j = 0; j < drops.size(); ++j) {
+                drops[j](0.0001, 
+                     1300.0, 1300.0, 
+                     0.4);
+                double y_cm_mean = 0;
+                for(auto item: drops)
+                    y_cm_mean += item.CenterOfMass().second;
+                std::cout << y_cm_mean / drops.size() << std::endl;
+            }
               
     }
     
