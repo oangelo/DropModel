@@ -8,9 +8,9 @@ Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_paramete
         for (size_t j = 0; j < grid[i].size(); ++j)
             if(inside_drop(i,j))
                 grid[i][j] = 1;
-    //creating the substract
-    //    for (size_t i = 0; i < grid.size(); ++i)
-    //        grid[i][0] = 1;
+//    creating the substract
+        for (size_t i = 0; i < grid.size(); ++i)
+            grid[i][0] = -1;
 }
 
 bool Drop::inside_drop(size_t i, size_t j){
@@ -35,45 +35,53 @@ void Drop::operator()(double g, double J1, double J2, double temperature){
     std::uniform_int_distribution<> dry_dist(0,dry_element.size()-1);
     std::uniform_int_distribution<> wet_dist(0,wet_element.size()-1);
 
-    double e_init = GravitationalEnergy(g) + InteractionEnergy(J1, J2);
+    double e_init = GravitationalEnergy(grid, g) + InteractionEnergy(grid, J1, J2);
     column::iterator &  wet = wet_element[wet_dist(gen)];
     *wet = -*wet;
     column::iterator & dry = dry_element[dry_dist(gen)];
     *dry = -*dry;
-    double e_end = GravitationalEnergy(g) +  InteractionEnergy(J1, J2);
-    //if(e_end > e_init){
+    double e_end = GravitationalEnergy(grid, g) +  InteractionEnergy(grid, J1, J2);
+    //std::cout << e_end - e_init << std::endl;  
+    if(!(e_end - e_init < 0)){
         if(dist(gen) > exp(-beta*(e_end-e_init))){
             *wet = -*wet;
             *dry = -*dry;
         }
-    //}
+    }
 }
 
-double Drop::InteractionEnergy(double J1, double J2) const{
+double InteractionEnergy(const matrix & grid, double J1, double J2){
     double energy = 0;
     //spin interaction term
     for (size_t i = 2; i < grid.size()-2; ++i){
         for (size_t j = 2; j < grid[i].size()-2; ++j){
-            int energy_neighbours = 0;
+
             int sij = grid[i][j];
-            for (int x = -1; x < 2; ++x)
-                for (int y = -1; y < 2; ++y)
+
+            for (int x = -1; x < 2; ++x) {
+                for (int y = -1; y < 2; ++y) {
                     if((x != 0) && (y != 0)){
-                        energy_neighbours -= J1 *sij * grid[i + x][j + y];
+                        energy -= J1 *sij * grid[i + x][j + y];
+                        //std::cout << "e: " << J1 *sij * grid[i + x][j + y] << std::endl;
                     }
+                }
+            }
             
-            for (int x = -2; x < 3; x += 2)
-                for (int y = -2; y < 3; y += 2)
-                    if((x != 0) && (y != 0))
-                        energy_neighbours -= J2 *sij * grid[i + x][j + y];
+            for (int x = -2; x < 3; x += 2) {
+                for (int y = -2; y < 3; y += 2) {
+                    if((x != 0) && (y != 0)) {
+                        energy -= J2 *sij * grid[i + x][j + y];
+                    }
+                }
+            }
             
-            energy += energy_neighbours;
+            //std::cout << energy << std::endl;
         }
     }
     return energy;  
 }
  
-double Drop::GravitationalEnergy(double g) const {
+double GravitationalEnergy(const matrix & grid, double g) {
     //gravitational field
     double g_energy = 0;
     for (size_t j = 0; j < grid[0].size(); ++j){
@@ -81,7 +89,7 @@ double Drop::GravitationalEnergy(double g) const {
         for (size_t i = 0; i < grid.size(); ++i){
             sum += grid[i][j];
         }
-        g_energy += g * j * sum;  
+        g_energy += g * (j+1) * sum;  
     }
     return g_energy;  
 }
@@ -144,6 +152,7 @@ void GetBorders(matrix & grid, int color_one, int color_two,
         for(size_t j = 0; j < grid[i].size(); ++j) {
             if(IsOnEdge(i, j, grid)) {
                 column &vec = grid[i];
+                if(j > 1 && i > 1 && i < grid.size() - 2) //should not atualize the substract
                 if(grid[i][j] == color_one) {
                     one.push_back(vec.begin() + j);
                 }else{

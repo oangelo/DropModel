@@ -20,9 +20,7 @@ class Drop{
         size_t size() const;
         std::vector<int> &  operator[](size_t index) ;
         std::pair<double, double> CenterOfMass() const;
-        double GravitationalEnergy(double g) const;
         //double BulkEnergy(double k) const;
-        double InteractionEnergy(double J1, double J2) const;
         //iterate the simulation
         void operator()(double g = 9.8, double J1 = 1, double J2 = 1, double temperature = 0.0);
 
@@ -37,6 +35,9 @@ class Drop{
         bool ignore_fist_row;
         const unsigned wet = 1, dry = -1;
 };
+
+double GravitationalEnergy(const matrix & grid, double g);
+double InteractionEnergy(const matrix & grid, double J1, double J2);
 
 bool IsOnEdge(size_t i, size_t j, const matrix & grid);
 void GetBorders(matrix & grid, int color_one, int color_two, 

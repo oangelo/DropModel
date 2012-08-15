@@ -1,6 +1,69 @@
 #include "gtest/gtest.h"
 #include "../src/drop.h"
 
+TEST(Drop, GravitationaEnergy){
+    matrix grid; 
+    column v4({-1, -1, -1, -1, -1, -1, -1});
+    column v3({-1, -1,  1,  1, -1, -1, -1});
+    column v2({-1, -1,  1,  1, -1, -1, -1});
+    column v1({-1, -1, -1, -1, -1, -1, -1});
+    
+    grid.push_back(v1);
+    grid.push_back(v2);
+    grid.push_back(v3);
+    grid.push_back(v4);
+
+    matrix grid_check; 
+    column c4({-1, -1, -1, -1, -1, -1, -1});
+    column c3({-1, -1, -1,  1,  1, -1, -1});
+    column c2({-1, -1, -1,  1,  1, -1, -1});
+    column c1({-1, -1, -1, -1, -1, -1, -1});
+    
+    grid_check.push_back(c1);
+    grid_check.push_back(c2);
+    grid_check.push_back(c3);
+    grid_check.push_back(c4);
+
+    EXPECT_EQ(GravitationalEnergy(grid, 1), -84);
+    EXPECT_EQ(GravitationalEnergy(grid_check, 1), -76);
+    
+}
+
+TEST(Drop, InteractionEnergy){
+    matrix grid; 
+    column v6({-1, -1, -1, -1, -1, -1, -1, -1});
+    column v5({-1, -1, -1, -1, -1, -1, -1, -1});
+    column v4({-1, -1, -1,  1,  1, -1, -1, -1});
+    column v3({-1, -1, -1,  1,  1, -1, -1, -1});
+    column v2({-1, -1, -1, -1, -1, -1, -1, -1});
+    column v1({-1, -1, -1, -1, -1, -1, -1, -1});
+    
+    grid.push_back(v1);
+    grid.push_back(v2);
+    grid.push_back(v3);
+    grid.push_back(v4);
+    grid.push_back(v5);
+    grid.push_back(v6);
+
+    matrix grid_check; 
+    column c6({-1, -1, -1, -1, -1, -1, -1, -1});
+    column c5({-1, -1, -1, -1, -1, -1, -1, -1});
+    column c4({-1, -1, -1, -1, -1, -1, -1, -1});
+    column c3({-1, -1,  1,  1,  1,  1, -1, -1});
+    column c2({-1, -1, -1, -1, -1, -1, -1, -1});
+    column c1({-1, -1, -1, -1, -1, -1, -1, -1});
+    
+    grid_check.push_back(c1);
+    grid_check.push_back(c2);
+    grid_check.push_back(c3);
+    grid_check.push_back(c4);
+    grid_check.push_back(c5);
+    grid_check.push_back(c6);
+
+    std::cout << InteractionEnergy(grid, 2, 1) << std::endl;
+    std::cout << InteractionEnergy(grid_check, 2, 1) << std::endl;
+    
+}
 TEST(Drop, GetBoarders){
     matrix grid; 
     column v1({0, 0, 0, 0, 0, 0, 0});
@@ -41,13 +104,6 @@ TEST(Drop, GetBoarders){
     grid_check.push_back(c8);
 
 
-/*    for(size_t i = 0; i < grid.size(); ++i){ 
-        for(size_t j = 0; j < grid[i].size(); ++j) 
-            std::cout << grid[i][j] << " ";
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-//*/
     int white = 0, black = 1;
     std::vector<column::iterator> w, b;
     GetBorders(grid, white, black, w, b);
@@ -78,10 +134,9 @@ TEST(Drop, energy){
     Drop drop(100,30,20,15);
     //std::cout << drop.Energy() << std::endl;
 }
-//*
 TEST(Drop, plot_mean){
     Gnuplot plot;
-    std::vector<Drop> drops(10,Drop(40, 40 ,8 ,15));
+    std::vector<Drop> drops(20, Drop(40, 40, 9,10));
               
     for (size_t i = 0; i < 1000; ++i)
     {
@@ -89,19 +144,18 @@ TEST(Drop, plot_mean){
         
         for (size_t i = 0; i < 400; ++i)
             for (size_t j = 0; j < drops.size(); ++j) {
-                drops[j](0.0001, 
-                     1300.0, 1300.0, 
-                     0.4);
+                drops[j](0.32, 
+                     4.0, 1.0, 
+                     4.600001);
                 double y_cm_mean = 0;
                 for(auto item: drops)
                     y_cm_mean += item.CenterOfMass().second;
-                std::cout << y_cm_mean / drops.size() << std::endl;
+//                std::cout << y_cm_mean / drops.size() << std::endl;
             }
               
     }
     
 }
-//*/
 TEST(Drop, plot){
     Gnuplot plot;
     Drop drop(40, 40 ,10 ,0);
@@ -116,7 +170,6 @@ TEST(Drop, plot){
     }
     
 } 
-
 
 
 
