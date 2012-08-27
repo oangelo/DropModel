@@ -26,14 +26,15 @@ void Drop::operator()(double g, double J1, double J2, double temperature){
     double beta = 1 / temperature;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(0,1);
+    std::uniform_real_distribution<> dist(0, 1);
 
     std::vector<column::iterator>  dry_element; 
     std::vector<column::iterator>  wet_element;
 
-    GetBorders(grid, wet, dry, wet_element, dry_element);
-    std::uniform_int_distribution<> dry_dist(0,dry_element.size()-1);
-    std::uniform_int_distribution<> wet_dist(0,wet_element.size()-1);
+    unsigned substrare_height = 2;
+    GetBorders(grid, wet, dry, wet_element, dry_element, substrare_height);
+    std::uniform_int_distribution<> dry_dist(0, dry_element.size() - 1);
+    std::uniform_int_distribution<> wet_dist(0, wet_element.size() - 1);
 
     double e_init = GravitationalEnergy(grid, g) + InteractionEnergy(grid, J1, J2);
     column::iterator &  wet = wet_element[wet_dist(gen)];
@@ -147,19 +148,19 @@ bool IsOnEdge(size_t i, size_t j, const matrix & grid){
 //*
 void GetBorders(matrix & grid, int color_one, int color_two,  
                 std::vector<column::iterator> & one, 
-                std::vector<column::iterator> & two) {
+                std::vector<column::iterator> & two, unsigned substract_height) {
     for(size_t i = 0; i < grid.size(); ++i) { 
         for(size_t j = 0; j < grid[i].size(); ++j) {
             if(IsOnEdge(i, j, grid)) {
                 column &vec = grid[i];
-                if(j > 1 && i > 1 && i < grid.size() - 2) //should not atualize the substract
-                if(grid[i][j] == color_one) {
-                    one.push_back(vec.begin() + j);
-                }else{
-                    if(grid[i][j] == color_two)
-                        two.push_back(vec.begin() + j);
+                if(j >= substract_height) { //should not atualize the substract
+                    if(grid[i][j] == color_one) {
+                        one.push_back(vec.begin() + j);
+                    }else{
+                        if(grid[i][j] == color_two)
+                            two.push_back(vec.begin() + j);
+                    }
                 }
-    
             }
         }
     }

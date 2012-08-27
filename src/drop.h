@@ -42,7 +42,7 @@ double InteractionEnergy(const matrix & grid, double J1, double J2);
 bool IsOnEdge(size_t i, size_t j, const matrix & grid);
 void GetBorders(matrix & grid, int color_one, int color_two, 
                 std::vector<column::iterator> & one, 
-                std::vector<column::iterator> & two);
+                std::vector<column::iterator> & two, unsigned substract_height = 0);
 
 class Print{
     public:

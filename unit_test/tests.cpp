@@ -62,8 +62,8 @@ TEST(Drop, InteractionEnergy){
 
     std::cout << InteractionEnergy(grid, 2, 1) << std::endl;
     std::cout << InteractionEnergy(grid_check, 2, 1) << std::endl;
-    
 }
+
 TEST(Drop, GetBoarders){
     matrix grid; 
     column v1({0, 0, 0, 0, 0, 0, 0});
@@ -134,6 +134,7 @@ TEST(Drop, energy){
     Drop drop(100,30,20,15);
     //std::cout << drop.Energy() << std::endl;
 }
+
 TEST(Drop, plot_mean){
     Gnuplot plot;
     std::vector<Drop> drops(20, Drop(40, 40, 9,10));
@@ -156,6 +157,7 @@ TEST(Drop, plot_mean){
     }
     
 }
+
 TEST(Drop, plot){
     Gnuplot plot;
     Drop drop(40, 40 ,10 ,0);
@@ -170,8 +172,6 @@ TEST(Drop, plot){
     }
     
 } 
-
-
 
 int main(int argc, char *argv[])
 {  
