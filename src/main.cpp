@@ -20,8 +20,7 @@ int main(int argc, char** argv) {
             J1 = atof(argv[i+1]);
             J2 = atof(argv[i+2]);
             g = atof(argv[i+3]);
-            k = atof(argv[i+4]);
-            temp = atof(argv[i+5]);
+            temp = atof(argv[i+4]);
         }
         if(std::string(argv[i]) == "--sample" || std::string(argv[i]) == "-sp" )
             samples = atof(argv[i+1]);
@@ -31,7 +30,6 @@ int main(int argc, char** argv) {
     std::cout << "J1 = " << J1 << std::endl;
     std::cout << "J2 = " << J2 << std::endl;
     std::cout << "g = " << g << std::endl;
-    //std::cout << "k = " << k << std::endl;
     std::cout << "temp = " << temp << std::endl;
     for (size_t i = 1; i < argc; ++i)
     {
@@ -80,7 +78,7 @@ int main(int argc, char** argv) {
             std::cout << "----------------------------------------------------------------------" << std::endl;
             std::cout << "--grid   \t receives two args [height] and [length]" << std::endl;
             std::cout << "--circle \t receives two args [radius] and [height of the center]" << std::endl;
-            std::cout << "--model  \t receives four args [J1] ,[J2], [g], [k]. Where the J1, J2 are the spin interaction, g is the gravitational constant, and k is the intensity of the central force." << std::endl;
+            std::cout << "--model  \t receives four args [J1] ,[J2], [g], [T]. Where the J1, J2 are the spin interaction, g is the gravitational constant, and T is the temperature." << std::endl;
         }       
     }
     if(argc == 1){
@@ -91,7 +89,7 @@ int main(int argc, char** argv) {
         std::cout << "----------------------------------------------------------------------" << std::endl;
         std::cout << "--grid   \t receives two args [height] and [length]" << std::endl;
         std::cout << "--circle \t receives two args [radius] and [height of the center]" << std::endl;
-        std::cout << "--model  \t receives four args [J1] ,[J2], [g], [k]. Where the J1, J2 are the spin interaction, g is the gravitational constant, and k is the intensity of the central force." << std::endl;
+        std::cout << "--model  \t receives four args [J1] ,[J2], [g], [T]. Where the J1, J2 are the spin interaction, g is the gravitational constante, and T is the temperature.." << std::endl;
     }
     return 0;
 }

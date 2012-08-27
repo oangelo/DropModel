@@ -137,13 +137,11 @@ TEST(Drop, energy){
 
 TEST(Drop, plot_mean){
     Gnuplot plot;
-    std::vector<Drop> drops(20, Drop(40, 40, 9,10));
-              
+    std::vector<Drop> drops(20, Drop(40, 40, 9, 10));
     for (size_t i = 0; i < 1000; ++i)
     {
         plot.mean(drops,1);
-        
-        for (size_t i = 0; i < 400; ++i)
+        for (size_t i = 0; i < 400; ++i) {
             for (size_t j = 0; j < drops.size(); ++j) {
                 drops[j](0.32, 
                      4.0, 1.0, 
@@ -153,9 +151,8 @@ TEST(Drop, plot_mean){
                     y_cm_mean += item.CenterOfMass().second;
 //                std::cout << y_cm_mean / drops.size() << std::endl;
             }
-              
+        }
     }
-    
 }
 
 TEST(Drop, plot){
