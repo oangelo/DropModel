@@ -14,7 +14,8 @@ Drop::Drop(size_t grid_length, size_t grid_height, unsigned geometrical_paramete
 }
 
 bool Drop::inside_drop(size_t i, size_t j){
-    double distance = sqrt(pow(i - (grid.size()/2.0), 2.0) + pow(j - (grid[0].size()/2.0) + geometrical_parameter_two, 2.0));
+    double distance = sqrt(pow(i - (grid.size() / 2.0), 2.0) 
+                    + pow(static_cast<double>(j) - geometrical_parameter_two, 2.0));
     if(distance < geometrical_parameter_one)
         return true;
     else
