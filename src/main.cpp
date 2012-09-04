@@ -1,11 +1,12 @@
 #include <string>
+#include <sstream>
 #include "drop.h"
 
 int main(int argc, char** argv) {
     int grid_height = 40, grid_length = 40;
     int geo_parameter1 = 10, geo_parameter2 = 0;
     double J1 = 1, J2 = 1, g = 9.8, k = 1, temp = 1;
-   size_t samples = 20;
+    size_t samples = 20;
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "--grid"){
@@ -24,13 +25,13 @@ int main(int argc, char** argv) {
         }
         if(std::string(argv[i]) == "--sample" || std::string(argv[i]) == "-sp" )
             samples = atof(argv[i+1]);
-            
+
     }
-    std::cout << "Parameters: "  << std::endl;
-    std::cout << "J1 = " << J1 << std::endl;
-    std::cout << "J2 = " << J2 << std::endl;
-    std::cout << "g = " << g << std::endl;
-    std::cout << "temp = " << temp << std::endl;
+    std::cout << "#> Parameters: "  << std::endl;
+    std::cout << "#> J1 = " << J1 << std::endl;
+    std::cout << "#> J2 = " << J2 << std::endl;
+    std::cout << "#> g = " << g << std::endl;
+    std::cout << "#> temp = " << temp << std::endl;
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "--plot"){
@@ -69,6 +70,27 @@ int main(int argc, char** argv) {
             }
         }
 
+        if(std::string(argv[i]) == "--movie"){
+            std::vector<Drop> drops(atoi(argv[i + 1]), Drop(grid_length, grid_height, geo_parameter1, geo_parameter2));
+            Print print_data;
+            std::string file_name(argv[i + 2]), file_name_aux;
+            unsigned counter = 0;
+            for (size_t i = 0; i < 10000; ++i)
+            {
+                std::ostringstream oss;
+                oss << counter;
+                file_name_aux = file_name + "_" + oss.str();
+                double y_cm_mean = 0;
+                for(auto item: drops)
+                    y_cm_mean += item.CenterOfMass().second;
+                std::cout << y_cm_mean / drops.size() << std::endl;
+                for (size_t i = 0; i < 200; ++i)
+                    for (size_t j = 0; j < drops.size(); ++j)
+                        drops[j](g, J1, J2, temp);
+                print_data(drops, file_name_aux);
+                counter++;
+            }
+        }
 
         if(std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h"){
             std::cout << "Usage:" << std::endl;
