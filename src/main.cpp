@@ -27,11 +27,11 @@ int main(int argc, char** argv) {
             samples = atof(argv[i+1]);
 
     }
-    std::cout << "#> Parameters: "  << std::endl;
-    std::cout << "#> J1 = " << J1 << std::endl;
-    std::cout << "#> J2 = " << J2 << std::endl;
-    std::cout << "#> g = " << g << std::endl;
-    std::cout << "#> temp = " << temp << std::endl;
+    std::cerr << "#> Parameters: "  << std::endl;
+    std::cerr << "#> J1 = " << J1 << std::endl;
+    std::cerr << "#> J2 = " << J2 << std::endl;
+    std::cerr << "#> g = " << g << std::endl;
+    std::cerr << "#> temp = " << temp << std::endl;
     for (size_t i = 1; i < argc; ++i)
     {
         if(std::string(argv[i]) == "--plot"){
@@ -91,6 +91,30 @@ int main(int argc, char** argv) {
                 counter++;
             }
         }
+
+        if(std::string(argv[i]) == "--final") {
+            std::vector<Drop> drops(atoi(argv[i + 1]), Drop(grid_length, grid_height, geo_parameter1, geo_parameter2));
+            Print print_data;
+            std::string file_name(argv[i + 2]), file_name_aux;
+            unsigned counter = atoi(argv[i + 3]);
+            
+            for (size_t i = 0; i < counter; ++i)
+            {
+                for (size_t j = 0; j < drops.size(); ++j)
+                    drops[j](g, J1, J2, temp);
+            }
+
+            double y_cm_mean = 0;
+            for(auto item: drops)
+                y_cm_mean += item.CenterOfMass().second;
+            std::cout << g << " " << y_cm_mean / drops.size() << std::endl;
+
+            std::ostringstream oss;
+            oss << g;
+            file_name_aux = file_name + "_" + oss.str();
+            print_data(drops, file_name_aux);
+        }
+
 
         if(std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h"){
             std::cout << "Usage:" << std::endl;

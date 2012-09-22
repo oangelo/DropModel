@@ -1,7 +1,7 @@
 DropModel
 =========
 
-A ising spin model to simulate a drop dynamic.
+An ising spin model to simulate the shape of a drop
 
 References:
 
