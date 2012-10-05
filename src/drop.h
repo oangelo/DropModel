@@ -10,21 +10,26 @@
 #include "gnuplot_i/gnuplot_i.h"
 
 
-
 typedef std::vector<int> column;
 typedef std::vector<column> matrix;
 
+template <typename element>
+class MeanShape;
+
 class Drop{
+
     public:
+
         Drop(size_t grid_length, size_t grid_height, unsigned geometrical_parameter_one, unsigned geometrical_parameter_two);
         size_t size() const;
-        std::vector<int> &  operator[](size_t index) ;
+        const std::vector<int> &  operator[](size_t index) ;
         std::pair<double, double> CenterOfMass() const;
         //double BulkEnergy(double k) const;
         //iterate the simulation
         void operator()(double g = 9.8, double J1 = 1, double J2 = 1, double temperature = 0.0);
 
     private:
+        
         matrix grid;
         unsigned drop_ray;
         bool inside_drop(size_t i, size_t j);
@@ -46,8 +51,22 @@ void GetBorders(matrix & grid, int color_one, int color_two,
 
 class Print{
     public:
-        void operator()(Drop & drop, std::string file_name) const;
+        //void operator()(Drop & drop, std::string file_name) const;
         void operator()(std::vector<Drop> &drops, std::string file_name) const;
+        void operator()(const MeanShape<Drop> & drop, const std::string & file_name) const;
+
+        template<class element>
+        void operator()(element & item, std::string file_name) const{
+            std::ofstream file;  
+            file.open(file_name);
+            for (size_t i = 0; i < item.size(); ++i)
+                for (size_t j = 0; j < (item[i]).size(); ++j)
+                    if(item[i][j] < 0)
+                        file << i << " \t " << j << std::endl; 
+            file.close();
+            
+        }
+
 };
 
 class Gnuplot{
@@ -61,3 +80,34 @@ class Gnuplot{
         gnuplot_ctrl * h;
 };
 
+template <typename element>
+class MeanShape{
+
+    public:
+
+        MeanShape(element & drop):grid(), counter(1){
+            for(size_t i = 0; i < drop.size(); ++i){
+                std::vector<double> aux; 
+                for(auto item: (drop[i]))
+                    aux.push_back(item);
+                grid.push_back(aux);
+            }
+        };
+        
+
+        void  operator()(element & drop){
+            for(size_t i = 0; i < drop.size(); ++i){
+                for(size_t j = 0; j < drop.size(); ++j)
+                   grid[i][j] = (drop[i][j] + grid[i][j] * counter) / (counter + 1); 
+            }
+            ++counter;
+        };
+
+        const std::vector<double> &  operator[](size_t index){return grid[index];};
+        size_t size() const {return grid.size();};
+
+    private:
+
+        std::vector<std::vector<double>> grid;
+        unsigned counter;
+};

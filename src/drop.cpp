@@ -22,7 +22,6 @@ bool Drop::inside_drop(size_t i, size_t j){
         return false;
 }
 
-
 void Drop::operator()(double g, double J1, double J2, double temperature){
     double beta = 1 / temperature;
     std::random_device rd;
@@ -113,7 +112,7 @@ std::pair<double, double> Drop::CenterOfMass() const{
 }
 
 size_t Drop::size() const { return grid.size(); }
-std::vector<int> &  Drop::operator[](size_t index) { return grid[index]; }
+const std::vector<int> &  Drop::operator[](size_t index) { return grid[index]; }
 
 bool IsOnEdge(size_t i, size_t j, const matrix & grid){
     if(i <  grid.size() - 1) {
@@ -143,7 +142,7 @@ bool IsOnEdge(size_t i, size_t j, const matrix & grid){
     if(j > 0)
         if(grid[i][j] != grid[i][j - 1])
             return true;
-
+    return false;
 }
 
 //*
@@ -210,6 +209,7 @@ void Gnuplot::operator()(std::vector<Drop> &drops, unsigned time) const{
     gnuplot_cmd(h, "plot  \"%s\" u 1:2:3 with points pt 7 linetype palette", myfile);
     sleep(time);
 }
+
 void Gnuplot::mean(std::vector<Drop> &drops, unsigned time) const{
     std::vector<std::vector<double>> mean_grid;
     for(size_t i = 0; i < drops[0].size(); ++i)
@@ -229,16 +229,6 @@ void Gnuplot::mean(std::vector<Drop> &drops, unsigned time) const{
     char myfile[] = "buffer";   
     gnuplot_cmd(h, "plot  \"%s\" pt 7 ps 0.5 notitle", myfile);
     sleep(time);
-}
-
-void Print::operator()(Drop &drop, std::string file_name) const{
-    std::ofstream plot;  
-    plot.open(file_name);
-    for (size_t i = 0; i < drop.size(); ++i)
-        for (size_t j = 0; j < drop[i].size(); ++j)
-            if(drop[i][j] == -1)
-                plot << i << " \t " << j << std::endl; 
-    plot.close();
 }
 
 void Print::operator()(std::vector<Drop> &drops, std::string file_name) const{

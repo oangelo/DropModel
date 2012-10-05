@@ -1,6 +1,32 @@
 #include "gtest/gtest.h"
 #include "../src/drop.h"
 
+TEST(Drop, Mean_shape){
+    matrix grid; 
+    grid.push_back({1, 1});
+    grid.push_back({1, 1});
+
+    matrix grid1; 
+    grid1.push_back({2, 2});
+    grid1.push_back({2, 2});
+
+    matrix grid2; 
+    grid2.push_back({3, 3});
+    grid2.push_back({3, 3});
+    
+    MeanShape<matrix> shape(grid);
+    shape(grid1);
+    shape(grid2);
+    for (size_t i = 0; i < shape.size(); ++i)
+    {
+        for (size_t j = 0; j < shape[i].size(); ++j)
+            std::cout << shape[i][j] << " ";
+        std::cout << std::endl;
+    }
+    //Print printer; 
+    //printer(shape, std::string("teste"));
+}
+
 TEST(Drop, GravitationaEnergy){
     matrix grid; 
     column v4({-1, -1, -1, -1, -1, -1, -1});
@@ -125,7 +151,7 @@ TEST(Drop, Init){
 }
 
 TEST(Drop, CenterOfMass){
-    Drop drop(100, 100, 35 ,0 );
+    Drop drop(100, 100, 36, 50);
     EXPECT_EQ(drop.CenterOfMass().first,50);
     EXPECT_EQ(drop.CenterOfMass().second,50);
 }
