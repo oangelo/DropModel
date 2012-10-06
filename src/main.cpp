@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
             }
         }
 
-        if(std::string(argv[i]) == "--final") {
+        if(std::string(argv[i]) == "--final-ensamble") {
             std::vector<Drop> drops(atoi(argv[i + 1]), Drop(grid_length, grid_height, geo_parameter1, geo_parameter2));
             Print print_data;
             std::string file_name(argv[i + 2]), file_name_aux;
@@ -114,6 +114,38 @@ int main(int argc, char** argv) {
             file_name_aux = file_name + "_" + oss.str();
             print_data(drops, file_name_aux);
         }
+
+        if(std::string(argv[i]) == "--mean-time") {
+            Drop drop(grid_length, grid_height, geo_parameter1, geo_parameter2);
+            Print print_data;
+
+            std::string file_name(argv[i + 2]), file_name_aux;
+            unsigned counter = atoi(argv[i + 3]);
+            unsigned counter_final = 500;
+            
+            double y_cm_mean = 0;
+            for (size_t i = 0; i < counter; ++i)
+            {
+                drop(g, J1, J2, temp);
+            }
+            MeanShape<Drop> drop_shape(drop);
+            for (size_t i = 0; i < counter_final; ++i)
+            {
+                drop(g, J1, J2, temp);
+                drop_shape(drop);
+                y_cm_mean += drop.CenterOfMass().second;
+            }
+
+            //*
+            std::cout << g << " " << y_cm_mean / counter_final << std::endl;
+
+            std::ostringstream oss;
+            oss << g;
+            file_name_aux = file_name + "_" + oss.str();
+            print_data(drop_shape, file_name_aux);
+            //*/
+        }
+
 
 
         if(std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h"){

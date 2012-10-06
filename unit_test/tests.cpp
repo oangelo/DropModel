@@ -20,8 +20,9 @@ TEST(Drop, Mean_shape){
     for (size_t i = 0; i < shape.size(); ++i)
     {
         for (size_t j = 0; j < shape[i].size(); ++j)
-            std::cout << shape[i][j] << " ";
-        std::cout << std::endl;
+            EXPECT_EQ(shape[i][j], 2);
+            //std::cout << shape[i][j] << " ";
+        //std::cout << std::endl;
     }
     //Print printer; 
     //printer(shape, std::string("teste"));
@@ -86,8 +87,8 @@ TEST(Drop, InteractionEnergy){
     grid_check.push_back(c5);
     grid_check.push_back(c6);
 
-    std::cout << InteractionEnergy(grid, 2, 1) << std::endl;
-    std::cout << InteractionEnergy(grid_check, 2, 1) << std::endl;
+    //std::cout << InteractionEnergy(grid, 2, 1) << std::endl;
+    //std::cout << InteractionEnergy(grid_check, 2, 1) << std::endl;
 }
 
 TEST(Drop, GetBoarders){

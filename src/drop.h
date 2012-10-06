@@ -97,7 +97,7 @@ class MeanShape{
 
         void  operator()(element & drop){
             for(size_t i = 0; i < drop.size(); ++i){
-                for(size_t j = 0; j < drop.size(); ++j)
+                for(size_t j = 0; j < drop[i].size(); ++j)
                    grid[i][j] = (drop[i][j] + grid[i][j] * counter) / (counter + 1); 
             }
             ++counter;
