@@ -131,12 +131,15 @@ int main(int argc, char** argv) {
             MeanShape<Drop> drop_shape(drop);
             for (size_t i = 0; i < counter_final; ++i)
             {
+                for (size_t i = 0; i < 2 * counter_final; ++i)
+                {
+                    drop(g, J1, J2, temp);
+                }
                 drop(g, J1, J2, temp);
                 drop_shape(drop);
                 y_cm_mean += drop.CenterOfMass().second;
             }
 
-            //*
             std::cout << g << " " << y_cm_mean / counter_final << std::endl;
 
             std::ostringstream oss;
